@@ -1,0 +1,8 @@
+{
+  "modules" : { 
+    "askme":     {
+      "description": "Ne laissez plus une notification de Sarah s'évanouir dans le silence...",
+      "version"    : "1.2"
+    }
+  }
+}

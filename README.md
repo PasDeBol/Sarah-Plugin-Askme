@@ -1,7 +1,13 @@
 Sarah-Plugin-Askme
 ==================
+Plugin Askme pour Sarah (http://encausse.wordpress.com/s-a-r-a-h/)<br>
 
-Plugin Askme pour Sarah (http://encausse.wordpress.com/s-a-r-a-h/)
+
+Ne laisser plus une notification de Sarah s'évanouir dans le silence...<br>
+
+Le système X demande à Sarah de vous poser une question,<br>
+Répondez lui (ou pas), elle effectuera votre choix!<br>
+
 
 Version 1.2 :<br>
 [X] Ajout de 'TTSanswer' pour une réponse immédiate de Sarah (TTS) en cas de réponse<br>
