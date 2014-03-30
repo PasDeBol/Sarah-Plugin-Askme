@@ -4,14 +4,15 @@ http://127.0.0.1:8080/sarah/askme?request={....}
 
 ** REQUEST JSON STRUCTURE:
 {
-	"question":			"MY QUESTION",
-	"answer":			["TEXT_ANSWER_1","TEXT_ANSWER_2","TEXT_ANSWER_..."],
-	"answervalue":		["URL_ACTION_1","URL_ACTION_2","URL_ACTION_...],
-	"answercallback":	[false,true,...],														//if transmit callback from action is needed
-	"TTSanswer":		["TTS_ANSWER_1","","TTS_ANSWER_..."],									// TTS Speech with answer 
-	"no_answervalue": 	INTEGER (URL_ACTION's number) OR STRING (url),							// Default action if no answer from user
-	"timeout": 			INTEGER_TIMEOUT_IN_SECOND,												// waiting for an answer until timeout 
-	"recall": 			true/false																// if no answer, save request in file to 'askme' again later?
+	"question":				"MY QUESTION",
+	"answer":				["TEXT_ANSWER_1","TEXT_ANSWER_2","TEXT_ANSWER_..."],
+	"answervalue":			["URL_ACTION_1","URL_ACTION_2","URL_ACTION_...],
+	"answercallback":		[false,true,...],														//if transmit callback from action is needed
+	"TTSanswer":			["TTS_ANSWER_1","","TTS_ANSWER_..."],									// TTS Speech with answer 
+	"no_answervalue": 		INTEGER (URL_ACTION's number) OR STRING (url),							// Default action if no answer from user
+	"timeout": 				INTEGER_TIMEOUT_IN_SECOND,												// waiting for an answer until timeout 
+	"recall": 				true/false,																// if no answer, save request in file to 'askme' again later?
+	"callback_immediatly": 	true/false																// callback immediatly - disabled  answercallback. (needed if long timeout)
  }
  
 ** DEFAULT VALUE: 
@@ -22,12 +23,15 @@ recall = true, timeout=20, answercallback=true
 // http://127.0.0.1:8080/sarah/askme?request={%22question%22:%22veux+tu+que+l%27on+chante%3f%22,%22answer%22:[%22Oui%20merci%22,%20%22Non%20merci%22],%22answervalue%22:[%22http%3a%2f%2f127.0.0.1%3a8080%2fsarah%2faskme%3ftest%3dje+ne+sais+pas+chanter!%22,%22http%3a%2f%2f127.0.0.1%3a8080%2fsarah%2faskme%3ftest%3dje+me+tais!%22]}
 
 ** POST EXEMPLE CODE:
- 	var json={"request":{}};
+	var json={"request":{}};
     json.request.question="Bonjour comment allez vous?";
-	json.request.answer=["ça va bien","ça ne vas pas fort!"];
-	json.request.answervalue=["http://127.0.0.1:8080/sarah/askme?test=tu as dis oui",""];
+	json.request.answer=["ça va bien","ça ne vas pas fort!","tais toi!"];
+	json.request.TTSanswer=["Cool"];
+	json.request.answervalue=["http://127.0.0.1:8080/sarah/askme?test=tu as dis oui","http://127.0.0.1:8080/sarah/askme?test=tu as dis NON",""];
+	json.request.no_answervalue="http://127.0.0.1:8080/sarah/askme?test=Je suppose que ça doit aller!";
 	json.request.recall=false;
 	json.request.timeout=10;
+	json.request.callback_immediatly= false;
 	var url='http://127.0.0.1:8080/sarah/askme';
 	var request = require('request');
     request({ 
@@ -46,20 +50,20 @@ recall = true, timeout=20, answercallback=true
 
 // CONFIGURATION
 var debug=true;
-var default_timeout=20;				// DEFAULT TIMEOUT VALUE (seconds)
+var default_timeout=10;				// DEFAULT TIMEOUT VALUE (seconds)
 var default_recall=true;			// DEFAULT RECALL VALUE (true: save question in JSON file)
 var default_answercallback=true;	// DEFAULT ANSWERCALLBACK VALUE (false: no callback from action url)
 var clear_json_on_init=true;		// false to not clear all questions in json when nodejs restart
 
 // INITIALISATION
 exports.init = function(SARAH){
-	SARAH.context.askme=-1	// SARAH.context.askme: (timeout :decrease value) -1=ready 0=End with answer, 1=No Answer, >1 waiting answer 
-	deletexmldata();
 	if (clear_json_on_init==true) {clearjson();}			
 }
 
+//EXPORTS.ACTION
 exports.action = function (data, callback, config, SARAH) {
-// QUESTION FROM URL HTTP
+
+	// QUESTION FROM URL HTTP
 	if ((typeof(data.request)!="undefined")||(typeof(data.body.request)!="undefined")) {
 		// Check URL/POST
 			var request={};
@@ -76,132 +80,89 @@ exports.action = function (data, callback, config, SARAH) {
 				for (var i = 0; i <request.answer.length; i++) 
 					{request.answercallback[i]=default_answercallback;} 	
 			}
-		// Process Request		
-			if (SARAH.context.askme==-1) {createquestion(request,true);}						// ASK Question Now
-			else {addtojson(request,false);}													// ASK Question later (add to json)
-			callback();
+		createquestion(request,true,SARAH);
 	} 
-
-
-// ANSWER FROM SARAH
-	else if ((typeof(data.reponse)!="undefined")&&(SARAH.context.askme>1)) {
-		// Reset timout
-		SARAH.context.askme=0;
-		// Delete Data XML
-		deletexmldata ();
-		// Supprime la dernier request du json
-		removetojson();
-		if (data.reponse!="") {
-			// Send Request
-				var request = require('request');
-				request({ 'uri' : data.reponse }, function (err, response, body){
-					if (err || response.statusCode != 200) {
-						console.log("L'action a échouée:"+err+" - "+response.statusCode);
-						callback({'tts': "L'action a échoué"});
-						return;
-					}
-					console.log('plugin askme - Send effectué: '+data.reponse);
-					if (data.callback=='true') {callback({'tts':response.body});} else {callback();}
-					setTimeout(function(){				
-						// See to another question in json
-						request=lastrequestfromjson();			
-						if (request!=false)	{
-							createquestion(request,false);
-						} else {
-							// Reset timout
-							SARAH.context.askme=-1;
-						}
-					}, 2000);				
-				});
-		}
-		else{
-			console.log('plugin askme - Réponse reçue : sans action');
-			// Reset timout
-			SARAH.context.askme=-1;
-			callback();
-		}
-	} 
-// REPEAT QUESTION FROM SARAH
+	
+	// REPEAT QUESTION FROM SARAH
 	else if (typeof(data.repeat)!="undefined")  {
-		// See to another question in json
 		request=lastrequestfromjson();			
-			if (request!=false)	{
-				if (SARAH.context.askme==-1) {				// Repeat Question and XML and start timeout
-					createquestion(request,false);
-					callback();
-				}
-				else{										// Repeat Question and timeout only
-					SARAH.context.askme=parseInt(request.timeout);
-					callback({'tts':request.question});
-					}		
+		if (request!=false)	
+			{
+			removetojson(); 
+			createquestion(request,false,SARAH);
 			}
-			else {
-				callback({'tts':'Je n\'ai pas de question en attente'});
-			}
+		else 
+			{callback({'tts':'Je n\'ai pas de question en attente'});}
 	}
-// *************************
-// ONLY FOR TEST PLUGIN
-	else if (typeof(data.test)!="undefined") {SARAH.speak(data.test); callback();}
-// *************************
+
+	// *************************
+	// ONLY FOR TEST PLUGIN
+	 else if (typeof(data.test)!="undefined") {SARAH.speak(data.test); callback({'body':{'tts':'reponse de test'}});}
+	// *************************
 
 	else callback();
 	
-	function createquestion (request,newone) {
-		// Insert Data in XML
-		writedataxml(request)
-		// update Context from Timeout (seconds)
-		SARAH.context.askme=parseInt(request.timeout);
-		if (newone) {
-			// Add question to json
-			addtojson(request,true);
-		}
-		setTimeout(function(){
-			// Question to Sarah
-			SARAH.speak(request.question);
-			console.log("plugin askme : En attente de  réponse ("+SARAH.context.askme+"s)");
-			// LOOP to wait an answer 
-			waitanswer(request.recall,request.no_answervalue);
-		}, 1000);
-	}
-
-	function waitanswer(recall, no_answervalue) {
-		if (SARAH.context.askme==1){
-			SARAH.context.askme=0;
-			console.log("plugin askme : Aucune réponse reçue!");
-			deletexmldata();
-			if (recall==false)  { removetojson();}
-			if (no_answervalue) {			// IF No ANSWER -> ACTION
-				// Send Request
-				var request = require('request');
-				request({ 'uri' : no_answervalue }, function (err, response, body){
-					if (err || response.statusCode != 200) {
-						console.log("L'action a échouée:"+err+" - "+response.statusCode);
-						callback({'tts': "L'action a échoué"});
-						return;
-					}
-					console.log('plugin askme - Send effectué: '+no_answervalue);
-					
-				});
+	function createquestion (my_request,newone,SARAH) {
+		console.log("plugin askme - Nouvelle requète:" + my_request.question);
+		my_question=my_request.question;
+		my_reponses={};
+		my_timeout=my_request.timeout*1000;
+		for (var i = 0; i < my_request.answer.length; i++) {my_reponses[my_request.answer[i]]=i;}
+		if (my_request.callback_immediatly) callback();
+		SARAH.askme(my_question, my_reponses, my_timeout, function(answer, end){ // the selected answer or false
+			// No answer
+			if (answer===false) {
+				console.log('plugin askme - Aucune réponse donnée');
+				if (my_request.recall==true)  { addtojson(my_request,true);}
+				if (my_request.no_answervalue) {			// IF No ANSWER -> ACTION
+					console.log('plugin askme - Action lancée sur absence de réponse');
+					// Send Request
+					var request = require('request');
+					request({ 'uri' : my_request.no_answervalue }, function (err, response, body){
+						if (err || response.statusCode != 200) {
+							console.log("L'action a échouée:"+err+" - "+response.statusCode);
+							callback({'tts': "L'action a échoué"});
+							return;
+						}
+						console.log('plugin askme - Send effectué: '+my_request.no_answervalue);
+						callback();
+					});
+				}
+				else {callback();}
+				end();
 			}
-			
-			setTimeout(function(){				
-					// See to another question in json without recall only
-					request=lastrequest_norecall_fromjson();			
+			// Answer
+			else 	{
+				console.log('plugin askme - réponse donnée:'+my_request.answer[answer]);
+				// tts on answer
+				if ((typeof(my_request.TTSanswer)!='undefined')&&(typeof(my_request.TTSanswer[answer])!='undefined')&&(my_request.TTSanswer[answer]!="")) {SARAH.speak(my_request.TTSanswer[answer])}
+				if (my_request.answervalue[answer]!='') {
+					// Send Request
+					console.log('plugin askme - Action lancée sur réponse');
+					var request = require('request');
+					request({ 'uri' : my_request.answervalue[answer] }, function (err, response, body){
+						if (err || response.statusCode != 200) {
+							console.log("L'action a échouée:"+err+" - "+response.statusCode);
+							callback({'tts': "L'action a échoué"});
+							return;
+						}
+						console.log('plugin askme - Send effectué: '+my_request.answervalue[answer]);
+						if (!(my_request.callback_immediatly))
+							{if (my_request.answercallback[answer]=='true') {callback({'tts':response.body});} else {callback();}}
+					});
+				}
+				end();
+				// See to another question in json
+				setTimeout(function(){				
+					request=lastrequestfromjson();			
 					if (request!=false)	{
-						createquestion(request,false);
-					} else {
-						// Reset timout
-						SARAH.context.askme=-1;
-					}
-				}, 2000);	
-		}
-		else if (SARAH.context.askme>1){
-			//(SARAH.context.xbmc.scrolling=='ON') {
-			SARAH.context.askme=SARAH.context.askme-1;
-			if (debug==true) {console.log("plugin askme : En attente de  réponse ("+SARAH.context.askme+")");}
-			setTimeout(function(){waitanswer(recall,no_answervalue)}, 1000);
+						SARAH.run('askme', { 'repeat' : 1  , "body":''});
+						} 
+				}, 2000);
 			}
+		});
 	}
+	
 }
 
 function addtojson(request,newone){
@@ -241,23 +202,6 @@ function lastrequestfromjson(){						// GIVE LAST QUESTION FROM JSON
 	if (json.AllRequest.length>0) {	return json.AllRequest[0].request;}	else{return false;}
 } 
 
-function lastrequest_norecall_fromjson(){			// GIVE LAST QUESTION WITHOUT RECALL FROM JSON
-	var fs = require('fs');
-	var fileJSON = 'plugins/askme/askme.json';
-	var request=false;
-	if (fs.existsSync(fileJSON)) {json = JSON.parse(fs.readFileSync(fileJSON,'utf8'));}
-	for (var i = 0; i < json.AllRequest.length; i++) {
-		if (json.AllRequest[i].request.recall==false) {
-			request=json.AllRequest[i].request;
-			json.AllRequest.splice(i,1);
-			json.AllRequest.unshift(request)
-			fs.writeFileSync(fileJSON, JSON.stringify(json, null, 4) , 'utf8');
-			break;
-		}
-	}
-	return request;
-} 
-
 function removetojson(){ 							//REMOVE OLDEST QUESTION IN JSON
 	var fs = require('fs');
 	var fileJSON = 'plugins/askme/askme.json';
@@ -266,42 +210,6 @@ function removetojson(){ 							//REMOVE OLDEST QUESTION IN JSON
 	fs.writeFileSync(fileJSON, JSON.stringify(json, null, 4), 'utf8');
 	if (debug==true) {console.log('plugin askme - JSON mis à jour!');}
 } 
-
-function writedataxml(request) { 					// WRITE AUTOMATIC DATA IN XML
-	var fs = require('fs');
-	var fileXML = 'plugins/askme/askme.xml';
-	var xml = fs.readFileSync(fileXML, 'utf8');
-	var replace='';
-	console.log("plugin askme - Nouvelle requète:" + request.question);
-	for (var i = 0; i < request.answer.length; i++) {
-		if (request.answercallback[i]) {tag_callback='out.action.callback = "true";';} else {tag_callback='out.action.callback = "false";';}
-		tag_TTSanswer="";
-/*		if (typeof(request.TTSanswer)!='undefined') {
-			if (typeof(request.TTSanswer[i])!='undefined') {tag_TTSanswer='out.action._attributes.tts ="'+request.TTSanswer[i].replace(/&/gi, "&amp;")+'";';}
-		}
-*/		if ((typeof(request.TTSanswer)!='undefined')&&(typeof(request.TTSanswer[i])!='undefined')) {tag_TTSanswer='out.action._attributes.tts ="'+request.TTSanswer[i].replace(/&/gi, "&amp;")+'";';}
-		
-		replace+='\n			<item>'+request.answer[i].replace(/&/gi, " et ")+'<tag>out.action.reponse = encodeURIComponent("' + request.answervalue[i].replace(/&/gi, "&amp;") + '");'+tag_callback+tag_TTSanswer+'</tag></item>';
-		//console.log("plugin askme - "+request.answer[i]);
-	}
-	replace="§AUTOMATIC_XML_ASKME§ -->"+replace+"\n			<!-- END §AUTOMATIC_XML_ASKME§";
-	var regexp = new RegExp('§AUTOMATIC_XML_ASKME§[^*]+§AUTOMATIC_XML_ASKME§', 'gm');
-	var xml = xml.replace(regexp, replace);
-	fs.writeFileSync(fileXML, xml, 'utf8');
-	if (debug==true) {console.log('plugin askme - XML mis à jour!');}
-}
-
-function deletexmldata() { 							//DELETE AUTOMATIC DATA IN XML
-	var fs = require('fs');
-	var fileXML = 'plugins/askme/askme.xml';
-	var xml = fs.readFileSync(fileXML, 'utf8');
-	var replace = '§AUTOMATIC_XML_ASKME§ -->\n			<!-- END §AUTOMATIC_XML_ASKME§';
-	var regexp = new RegExp('§AUTOMATIC_XML_ASKME§[^*]+§AUTOMATIC_XML_ASKME§', 'gm');
-	var xml = xml.replace(regexp, replace);
-	fs.writeFileSync(fileXML, xml, 'utf8');
-	if (debug==true) {console.log('plugin askme - Data du XML effacées.');}
-
-}
 
 function clearjson(){								// CLEAR JSON
 	var fs = require('fs');

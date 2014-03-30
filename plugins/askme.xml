@@ -4,10 +4,7 @@
 		<one-of>
 			<item>Sarah qu'est ce que tu m'as tu demandé?<tag>out.action.repeat = 1</tag></item>
 			<item>Sarah tu veux me poser des questions?<tag>out.action.repeat = 1</tag></item>
-			<!-- START §AUTOMATIC_XML_ASKME§ -->
-			<!-- END §AUTOMATIC_XML_ASKME§ -->
 		</one-of>
-
 		<tag>out.action._attributes.uri="http://127.0.0.1:8080/sarah/askme";</tag>
 	</rule>
  </grammar>

@@ -10,15 +10,15 @@
     });
 </script>
 <p class="page-header">
-    <span class="lead">Ne laisser plus une notification de Sarah s'évanouir dans le silence...</span><br/></br>
-	<span class="lead">Le système X demande à Sarah de vous poser une question,</span><br/>
-    <span class="lead">Répondez lui (ou pas), elle effectuera votre choix!</span><br/></br>
-   <b>Version 1.2</b></br></br>
+	<b>Version 2.0</b></br></br>
+	<span class="lead">Ne laissez plus une notification de Sarah s'évanouir dans le silence...</span><br/></br>
+	<span>Le système X demande à Sarah de vous poser une question, Répondez lui (ou pas), elle effectuera votre choix!</span><br/></br>
+    <span>La fonction est désormais native dans Sarah mais le plugin permet de rendre la fonction accessible de "l'extérieur" et de mémoriser les questions restées sans réponse pour les reposer plus tard.</span><br/>
 </p>
 
-<div id="plugin-menu" class="row-fluid">
+<div id="plugin-menu" class="row">
     <!--Navigation-->
-    <div class="span3 well plugin-nav">
+    <div class="stretch col-md-3 well plugin-nav">
         <ul class="nav nav-list">
             <li class="nav-header">Documentation</li>
             <li><a href="#" data-toggle="plugin-principe">Le Principe</a></li>
@@ -32,32 +32,46 @@
         </ul>
     </div>
     <!--Content-->
-    <div class="span9 content">
-       <!--Principe-->
+    <div class="col-md-9 content">
+       <!--Versions-->
         <ul class="unstyled" id="plugin-version" >
-			<li>Version 1.2 (Jérôme Veyret) :</li>
-			<li><i class="icon-play-circle"></i> [X] Ajout de 'TTSanswer' pour une réponse immédiate de Sarah (TTS) en cas de réponse</li>
-			<li><i class="icon-play-circle"></i> [X] Correction d'un bug en cas d'action vide</li></br>
-			<li>Version 1.1 (Jérôme Veyret) :</li>
-			<li><i class="icon-play-circle"></i> [X] Reception possible du Json par POST</li>
-			<li><i class="icon-play-circle"></i> [X] Action vide autorisée</li>
-			<li><i class="icon-play-circle"></i> [X] Ajout de 'abswercallback' pour attente ou non du callback de l'action</li></br>
-			<li>Version 1.0 (Jérôme Veyret) :</li>
-			<li><i class="icon-play-circle"></i> [X] Version de base</li>
-			<li><i class="icon-play-circle"></i> [X] Action sur absence de réponse</li>
-			<li><i class="icon-play-circle"></i> [X] Correction de "&" par "et" dans un texte de grammaire XML</li></br>
+			<div class="alert alert-success">Versions</div>
+			<li>Version 2.0:</li>
+			[X] Refonte du code et Intégration de la fonction native SARAH.askme</br>
+			[X] Ajout de l'option <em>callback_immediatly</em> (utile pour un timeout elevé).</br></br>
+			<li>Version 1.2:</li>
+			 [X] Ajout de 'TTSanswer' pour une réponse immédiate de Sarah (TTS) en cas de réponse</br>
+			 [X] Correction d'un bug en cas d'action vide</br></br>
+			<li>Version 1.1:</li>
+			 [X] Reception possible du Json par POST</br>
+			 [X] Action vide autorisée</br>
+			 [X] Ajout de 'abswercallback' pour attente ou non du callback de l'action</br></br>
+			<li>Version 1.0:</li>
+			 [X] Version de base</br>
+			 [X] Action sur absence de réponse</br>
+			 [X] Correction de "&" par "et" dans un texte de grammaire XML</br></br>
         </ul>
 
-		<!--Content-->
-    <div class="span9 content">
        <!--Principe-->
         <ul class="unstyled" id="plugin-principe" style="display: none;">
+			<div class="alert alert-success">Le principe</div>
+			
+			<!--https://github.com/JpEncausse/SARAH-Documentation/wiki/JavaScript-API#askme-->
+			<li><i class="icon-play-circle"></i><strong> Le plugin utilise SARAH.askme</strong></br>
+			&nbsp;&nbsp;&nbsp;- <strong>La fonction est désormais native dans Sarah: SARAH.askme</strong></br>
+			&nbsp;&nbsp;&nbsp;- Le plugin permet de rendre la fonction accessible de "l'extérieur".</br>
+			&nbsp;&nbsp;&nbsp;- Le plugin permet de mémoriser les questions restées sans réponse pour les reposer plus tard.</br>
+			&nbsp;&nbsp;&nbsp;- Pour plus d'info sur la fonction native SARAH.askme:</br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="blank" href="https://github.com/JpEncausse/SARAH-Documentation/wiki/JavaScript-API#askme">https://github.com/JpEncausse/SARAH-Documentation/wiki/JavaScript-API#askme</a></br></br>
+			</li>
+			
 			<li><i class="icon-play-circle"></i><strong> L'utilisation normal de Sarah est:</strong><BR>
 			&nbsp;&nbsp;&nbsp;- Nous demandons (voix) -> Sarah exécute (requète http par exemple) -> Le système X agit</br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ou </br>
 			&nbsp;&nbsp;&nbsp;- Le système X avertis (requète http) -> Sarah parle et nous informe. (Voix)</br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ou </br>
 			&nbsp;&nbsp;&nbsp;- Sarah vérifie l'état du système X -> Sarah parle et nous informe. (Voix)</br></br>
+			</li>
 			
 			<li><i class="icon-play-circle"></i><strong> Ce plugin permet:</strong><BR>
 			&nbsp;&nbsp;&nbsp;- Le système X fourni une question, les réponses possibles et les actions correspondantes  (requète http)</br>
@@ -65,7 +79,8 @@
 			&nbsp;&nbsp;&nbsp;--> Nous répondons (Voix)</br>
 			&nbsp;&nbsp;&nbsp;---> Sarah exécute l'action correspondante (requète http)</br>
 			&nbsp;&nbsp;&nbsp;----> Le système X agit en fonction</br></br>
-
+			</li>
+			
 			<li><i class="icon-play-circle"></i><strong> Exemple:</strong><BR>
 			&nbsp;&nbsp;&nbsp;- La box domotique s'appercoit que le portail est ouvert depuis 1 heure<Br>
 			&nbsp;&nbsp;&nbsp;- Elle fait poser la question à Sarah: "Faut il fermer le portail?"<br>
@@ -78,57 +93,60 @@
 			&nbsp;&nbsp;&nbsp;- ...aucune réponse.."<br>
 			&nbsp;&nbsp;&nbsp;- Sarah envois la requète HTTP correspondant à aucune réponse<br>
 			&nbsp;&nbsp;&nbsp;- Votre domotique ne gère pas l'éclairage.<br>
+			</li>
         </ul>
 		
       <!--fonctionnement-->
         <ul class="unstyled" id="plugin-fonctionnement" style="display: none;">
-            <li><i class="icon-play-circle"></i><strong> Sarah recoit une nouvelle requète:</strong></br>
+            <div class="alert alert-success">Le fonctionnement</div>
+			<li><i class="icon-play-circle"></i><strong> Sarah recoit une nouvelle requète:</strong></br>
 			La requète est traitée:</br>
-			Génération de askme.xml pour prendre en compte réponse et action.</br>
-			La requète est ajoutée dans le fichier askme.json</br>
-			Sarah pose la question et attends la réponse durant le temps <em>timeout</em>.</br></br>
+			Appel de SARAH.askme avec vos réponses possibles.</br>
+			(Sarah pose la question et attends la réponse durant le temps <em>timeout</em>)</br></br>
+			</li>
 
 			<li><i class="icon-play-circle"></i><strong> Sarah recoit une réponse de votre part:</strong> </br>
-			L'url de réponse est envoyée.</br>
-			Les données du XML sont supprimées</br>
-			La requète est supprimée du fichier askme.json.</br>
+			SARAH.askme donne votre réponse au plugin.</br>
+			La plugin fait une requète vers l'url de la réponse.</br>
 			Le plugin vérifie si d'autres requètes sont en attente dans askme.json.</br>
 			Si c'est le cas -> chargement et effacement de la dernière requète du json puis reprise à l'étape: <em>Sarah recoit une nouvelle requète</em></br></br>
+			</li>
 			
 			<li><i class="icon-play-circle"></i><strong> Sarah ne recoit aucune une réponse:</strong> </br>
-			Les données du XML sont supprimées</br>
-			Si <em>recall = false</em>, la requète est supprimée dans le fichier askme.json</br>
+			Si <em>recall = true</em>, la requète est enregistrée dans le fichier askme.json</br>
 			Si <em>no_answervalue</em> existe, L'url de non-réponse est envoyée.</br>
-			&nbsp;&nbsp;&nbsp;(attention, si vous avez mis une no_answervalue sans recall = false!!)</br>
-			Le plugin vérifie si d'autres requètes avec <em>recall = false</em> sont en attente dans askme.json.</br>
-			Si c'est le cas -> chargement et effacement de la dernière requète du json puis reprise à l'étape: <em>Sarah recoit une nouvelle requète</em></br></br>
+			&nbsp;&nbsp;&nbsp;(attention, si vous avez mis une no_answervalue sans recall = false!!)</br></br>
+			</li>
 
             <li><i class="icon-play-circle"></i><strong> Sarah recoit une nouvelle requète pendant qu'elle pose déjà une question (ou attente de réponse):</strong></br>
-			La requète est ajoutée dans le fichier askme.json</br></br>
+			Même fonctionnement mais c'est la fonction native SARAR.askme qui bufferisera la question.</br></br>
+			</li>
 
- 			<li><i class="icon-play-circle"></i><strong> Vous demander à Sarah de répeter ou si elle a des questions:</strong> </br>
+ 			<li><i class="icon-play-circle"></i><strong> Vous demander à Sarah si elle a des questions:</strong> </br>
 			par la voix:</br>
-			Sarah qu'est ce que tu m'as tu demandé?</br>
-			Sarah tu veux me poser des questions?</br>
+			&nbsp;&nbsp;&nbsp;Sarah tu veux me poser des questions?</br>
 			par commande:</br>
-			http://XXX.XXX.XXX.XXXX:XXXX/sarah/askme?repeat=1</br>
-			Si vous demander ça avant la fin du timeout, Sarah répète simplement la question et le timeout est relancé.</br>
-			sinon:</br>
+			&nbsp;&nbsp;&nbsp;http://XXX.XXX.XXX.XXXX:XXXX/sarah/askme?repeat=1</br>
 			Le plugin vérifie si des requètes sont en attente dans askme.json.</br>
 			Si c'est le cas -> chargement et effacement de la dernière requète du json puis reprise à l'étape: <em>Sarah recoit une nouvelle requète</em></br></br>
+			</li>
           
         </ul>
 
 		<!--HTTP-->
         <ul class="unstyled" id="plugin-HTTP" style="display: none;">
-            <li><i class="icon-play-circle"></i><strong> La requète via l'URL:</strong></br>
+            <div class="alert alert-success">La requète Url ou Post</div>
+			<li><i class="icon-play-circle"></i><strong> La requète via l'URL:</strong></br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <strong>Besoin d'encoder les strings</strong> contenues dans le json</br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Vous pouvez utiliser ce site pour encoder votre url : <a target="blank" href="http://www.albionresearch.com/misc/urlencode.php">http://www.albionresearch.com/misc/urlencode.php</a></br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- http://IP_DU_NODEJS/sarah/askme?request=JSON</br></br>
+			</li>
 			
             <li><i class="icon-play-circle"></i><strong> La requète via POST:</strong></br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- cette méthode ne nécessite <strong>aucun encodage</strong> des strings contenues dans le json</br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- POST_json={"request":{JSON}}</br></br>
- 			
+ 			</li>
+			
 			<li><i class="icon-play-circle"></i><strong> La structure de JSON:</strong></br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>{</strong></br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"<strong>question</strong>" : "MY QUESTION",</br>
@@ -138,14 +156,16 @@
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"<strong>TTSanswer</strong>" : <strong>[ </strong>"TTS_ANSWER_1"<strong> , </strong>"TTS_ANSWER_2"<strong> , </strong>"TTS_ANSWER_3...<strong>] </strong>,</br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"<strong>no_answervalue</strong>" : <strong>"URL_ACTION"</strong> ou <strong>INTEGER_ID_answervalue</strong> ,</br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"<strong>timeout</strong>" : INTEGER_TIMEOUT_IN_SECOND,</br>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"<strong>recall</strong>" : true/false</br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"<strong>recall</strong>" : true/false,</br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"<strong>callback_immediatly</strong>" : true/false</br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>}</strong></br></br>
 			</li></br>
         </ul>
 
 		<!--JSON-->
         <ul class="unstyled" id="plugin-JSON" style="display: none;">
- 			<li><i class="icon-play-circle"></i><strong>Les éléments du JSON:</strong></br>
+ 			<div class="alert alert-success">Le contenu du JSON</div>
+			<li><i class="icon-play-circle"></i><strong>Les éléments du JSON:</strong></br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- "<strong>question</strong>" : </br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C'est la phrase qui va être prononcé par Sarah.<br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Au format STRING, encodée pour être transmise par url.<br></br>
@@ -184,15 +204,23 @@
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;20 par défaut. </br></br>
 
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- "<strong>recall</strong>" (FACULTATIF):</br>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;En cas d'absence de réponse, faut garder la question en mémoire?</br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;En cas d'absence de réponse, faut il garder la question en mémoire?</br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Si <em>false</em>, la question est systématiquement posée puis effacée.</br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Au format BOOLEAN (true/false).<br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;true par défaut. </br></br>
+
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- "<strong>callback_immediatly</strong>" (FACULTATIF):</br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Renvois immediatement un callback dès réception de la requète.</br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cela est utile en cas de timeout important, pour éviter que l'emmeteur ne relance à nouveau une requète. </br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Si <em>false</em>, Le callback sera renvoyé lors de la réponse (ou absence de réponse).</br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Au format BOOLEAN (true/false).<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false par défaut. </br></br>
 			</li>
         </ul>
         <!--Exemples 1-->
         <ul class="unstyled" id="plugin-examples" style="display: none;">
-            <li><i class="icon-play-circle"></i> <strong>Ce que l'on veut:</strong>
+            <div class="alert alert-success">Exemple n°1</div>
+			<li><i class="icon-play-circle"></i> <strong>Ce que l'on veut:</strong></br>
 			Question:</br>
 			&nbsp;&nbsp; Veux tu que l'on discute?</br>
 			Réponses XML:</br>
@@ -200,7 +228,8 @@
 			&nbsp;&nbsp;	2. non merci</br>
 			URL d'action:</br>
 			&nbsp;&nbsp;	1. http://127.0.0.1:8080/sarah/askme?test=je+ne+sais+pas+de+quoi+parler! (juste pour test ici! faire dire à Sarah: "je ne sais pas de quoi parler")</br>
-			&nbsp;&nbsp;	2. http://127.0.0.1:8080/sarah/askme?test=je+me+tais! (juste pour test ici! faire dire à Sarah: "je me tais")</br>
+			&nbsp;&nbsp;	2. http://127.0.0.1:8080/sarah/askme?test=je+me+tais! (juste pour test ici! faire dire à Sarah: "je me tais")</br></br>
+			</li>
 
 			<li><i class="icon-play-circle"></i><strong> Le JSON:</strong></li>
 			{</br>
@@ -213,11 +242,12 @@
 			<li><i class="icon-play-circle"></i> <strong>La requète:</strong></li>
 			http://127.0.0.1:8080/sarah/askme?request={%22question%22:%22veux+tu+que+l%27on+discute%3f%22,%22answer%22:[%22Oui%20ok%22,%20%22Non%20merci%22],%22answervalue%22:[%22http%3a%2f%2f127.0.0.1%3a8080%2fsarah%2faskme%3ftest%3dje+ne+sais+pas+de+quoi+parler!%22,%22http%3a%2f%2f127.0.0.1%3a8080%2fsarah%2faskme%3ftest%3dje+me+tais!%22],%22timeout%22:10,%22recall%22:true}
 			</br></br>
-			<li><i class="icon-play-circle"></i><STRONG> <a target="blank" href="http://127.0.0.1:8080/sarah/askme?request={%22question%22:%22veux+tu+que+l%27on+discute%3f%22,%22answer%22:[%22Oui%20ok%22,%20%22Non%20merci%22],%22answervalue%22:[%22http%3a%2f%2f127.0.0.1%3a8080%2fsarah%2faskme%3ftest%3dje+ne+sais+pas+de+quoi+parler!%22,%22http%3a%2f%2f127.0.0.1%3a8080%2fsarah%2faskme%3ftest%3dje+me+tais!%22],%22timeout%22:10,%22recall%22:true}">essayer cette requète!</a>, puis répondez "Oui OK" ou "Non merci".</STRONG>
+			<li><i class="icon-play-circle"></i><STRONG> <a target="blank" href="http://127.0.0.1:8080/sarah/askme?request={%22question%22:%22veux+tu+que+l%27on+discute%3f%22,%22answer%22:[%22Oui%20ok%22,%20%22Non%20merci%22],%22answervalue%22:[%22http%3a%2f%2f127.0.0.1%3a8080%2fsarah%2faskme%3ftest%3dje+ne+sais+pas+de+quoi+parler!%22,%22http%3a%2f%2f127.0.0.1%3a8080%2fsarah%2faskme%3ftest%3dje+me+tais!%22],%22timeout%22:10,%22recall%22:true}">essayer cette requète!</a>, puis répondez "Oui OK" ou "Non merci".</STRONG></li>
         </ul>
        <!--Exemples 2-->
         <ul class="unstyled" id="plugin-examples2" style="display: none;">
-            <li><i class="icon-play-circle"></i> <strong>Ce que l'on veut:</strong>
+            <div class="alert alert-success">Exemple n°2</div>
+			<li><i class="icon-play-circle"></i> <strong>Ce que l'on veut:</strong></br>
 			Question:</br>
 			&nbsp;&nbsp; 	Tu es là?</br>
 			Réponses XML:</br>
@@ -248,12 +278,13 @@
 			<li><i class="icon-play-circle"></i> <strong>La requète:</strong></li>
 			http://127.0.0.1:8080/sarah/askme?request={%22question%22:%22tu%20es%20la%3F%22,%22answer%22:[%22oui%20je%20suis%20la%22,%22non%20je%20ne%20suis%20pas%20la%22],%22answervalue%22:[%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dje%2520ne%2520suis%2520donc%2520pas%2520seule!%22,%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dquelle%2Bbonne%2Bblague!%22],%22no_answervalue%22:%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dje%2Bme%2Bsens%2Bseule!%22,%22timeout%22:10,%22recall%22:false}
 			</br></br>
-			<li><i class="icon-play-circle"></i><STRONG> <a target="blank" href="http://127.0.0.1:8080/sarah/askme?request={%22question%22:%22tu%20es%20la%3F%22,%22answer%22:[%22oui%20je%20suis%20la%22,%22non%20je%20ne%20suis%20pas%20la%22],%22answervalue%22:[%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dje%2520ne%2520suis%2520donc%2520pas%2520seule!%22,%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dquelle%2Bbonne%2Bblague!%22],%22no_answervalue%22:%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dje%2Bme%2Bsens%2Bseule!%22,%22timeout%22:10,%22recall%22:false}">essayer cette requète!</a>, puis répondez "Oui je suis la" ou "Non je ne suis pas la" ou ne répondez rien!</STRONG>
+			<li><i class="icon-play-circle"></i><STRONG> <a target="blank" href="http://127.0.0.1:8080/sarah/askme?request={%22question%22:%22tu%20es%20la%3F%22,%22answer%22:[%22oui%20je%20suis%20la%22,%22non%20je%20ne%20suis%20pas%20la%22],%22answervalue%22:[%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dje%2520ne%2520suis%2520donc%2520pas%2520seule!%22,%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dquelle%2Bbonne%2Bblague!%22],%22no_answervalue%22:%22http%3A%2F%2F127.0.0.1%3A8080%2Fsarah%2Faskme%3Ftest%3Dje%2Bme%2Bsens%2Bseule!%22,%22timeout%22:10,%22recall%22:false}">essayer cette requète!</a>, puis répondez "Oui je suis la" ou "Non je ne suis pas la" ou ne répondez rien!</STRONG></li>
         </ul>
 
       <!--Exemples 3-->
         <ul class="unstyled" id="plugin-examples3" style="display: none;">
-            <li><i class="icon-play-circle"></i> <strong>Ce que l'on veut:</strong></br>
+            <div class="alert alert-success">Exemple n°3</div>
+			<li><i class="icon-play-circle"></i> <strong>Ce que l'on veut:</strong></br>
 			Question:</br>
 			&nbsp;&nbsp; 	Tu es là?</br>
 			Réponses XML:</br>
@@ -271,6 +302,7 @@
 			&nbsp;&nbsp;	10s</br>
 			conserver/rappeler:</br>
 			&nbsp;&nbsp;	false (non)</br></br>
+			</li>
 
 			<li><i class="icon-play-circle"></i><strong> Le code Js:</strong></li>
 			</br>
@@ -296,18 +328,18 @@
 			&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;				return;</br>
 			&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;				}</br>	
 			&nbsp;&nbsp;&nbsp;&nbsp; 		});</br>
-	        </ul>
+		</ul>
 
 		<!--Infos-->
         <ul class="unstyled" id="plugin-infos" style="display: none;">
-            <li><i class="icon-play-circle"></i> <strong>Si vous mettez une no_answervalue et pas le recall à false: En absence de réponse, l'URL peut régulièrement être appelée!</strong></li></br>
-            <li><i class="icon-play-circle"></i> La réponse à une requète sous-entends votre présence, donc toutes les autres requètes seront à nouveau traitées</li></br>
-            <li><i class="icon-play-circle"></i> L'absence de réponse à une requète sous-entends votre absence, mais les autres requètes avec <em>recall=false</em> en attentes seront traitées</li></br>
-			<li><i class="icon-play-circle"></i> Les requètes avec <em>recall=true</em> seront effacée seulement si il y a eu réponse </li></br>
-            <li><i class="icon-play-circle"></i> Les requètes avec <em>recall=false</em> seront effacée après réponse ou non </li></br>
-			<li><i class="icon-play-circle"></i> Si une nouvelle requète est strictement identique à une du fichier askme.json, elle est simplement relancée mais il n'y a pas de doublon.</li></br>
+            <div class="alert alert-success">Infos</div>
+			<li><i class="icon-play-circle"></i> <strong>Si vous mettez une no_answervalue et pas le recall à false: En absence de réponse, l'URL peut régulièrement être appelée!</strong></li></br>
+            <li><i class="icon-play-circle"></i> La réponse à une requète sous-entends votre présence, donc toutes les autres requètes seront à nouveau traitées.</li></br>
+            <li><i class="icon-play-circle"></i> Les requètes avec <em>recall=true</em> seront enregistrée seulement si il n'y a pas eu de réponse. </li></br>
+            <li><i class="icon-play-circle"></i> Si une nouvelle requète est strictement identique à une du fichier askme.json, elle est simplement relancée mais il n'y a pas de doublon.</li></br>
 			<li><i class="icon-play-circle"></i> En cas de redémarrage de NodeJS, le fichier askme.json est vidé et les requètes perdues. (modifiable dans le code: mettre <em>clear_json_on_init</em> à <em>false</em>)</li></br>
 			<li><i class="icon-play-circle"></i> Les valeurs par défaut sont modifiables dans le code (<em>default_timeout</em> et <em>default_recall</em>)</li></br>
+			<li><i class="icon-play-circle"></i> <strong><em>callback_immediatly=true</em> est prioritaire face aux <em>answercallback</em>, ceux ci seront donc ignorés</strong>.</li></br>
         </ul> 
     </div>
 </div>
